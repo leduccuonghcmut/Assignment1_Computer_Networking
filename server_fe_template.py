@@ -1,6 +1,7 @@
 from tkinter import *
 import tkinter as tk
 import customtkinter as ctk
+from PIL import Image, ImageTk  # Thêm dòng này vào đầu file
 from tkinter import messagebox
 
 WIDTH = 900
@@ -68,65 +69,81 @@ class SERVER_FE(ctk.CTk):
         self.outputListPeer = ctk.CTkTextbox(self.animate_panel)
         self.outputFileOnSystem = ctk.CTkTextbox(self.frameListFilesOnSystem)
         #-----------------------------------------------------------------------------
+
         
         self.title("Tracker File Sharing Application")
         self.resizable(False, False)
         self.geometry("900x600")
         
-        self.current_frame = self.initialPage()
-        self.current_frame.pack()
+        self.current_frame = None  
 
-    def switch_frame(self, frame):
-        self.current_frame.pack_forget()
-        self.current_frame = frame()
-        self.current_frame.pack(padx=0)
+    # Gọi trang đầu tiên
+        self.switch_frame(self.initialPage)
+
+    def switch_frame(self, frame_function):
+        if self.current_frame is not None:
+         self.current_frame.pack_forget()  # Chỉ gọi nếu frame hiện tại đã được tạo
+    
+        self.current_frame = frame_function()  # Tạo frame mới từ hàm
+        self.current_frame.pack(fill="both", expand=True)  # Hiển thị frame mới
+
         
     def changeTheme(self):
         type = ctk.get_appearance_mode()
         if type == "Light":
             ctk.set_appearance_mode("dark")
+
         else:
             ctk.set_appearance_mode("light")
+
+            self.frameMainPage.configure(fg_color="#909090")  # Màu nền cho frame chính
     
     def initialPage(self):
-        frame_label = ctk.CTkLabel(self.frameInitialPage, text="WELCOME TO\n BITTORENT FILE SHARING", font=("Arial", 40, "bold"))
-        frame_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+        # Background color for left side (logo area)
+        left_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
+        left_frame.place(relx=0, rely=0)
+        t1_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
+        t1_frame.place(relx=0.5, rely=0)
+        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/new1.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image = Image.open(image_path)
+        new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
+        image = image.resize(new_size, Image.LANCZOS )
+        photo = ImageTk.PhotoImage(image)
+        image_label = ctk.CTkLabel(self.frameInitialPage, image=photo, text="")
+        image_label.image = photo  # Giữ tham chiếu đến hình ảnh
+        image_label.place(relx=0.25, rely=0.27, anchor=tk.CENTER)
 
-        button_sign_in = ctk.CTkButton(self.frameInitialPage, text="LOG IN", font=("Arial", 20, "bold"),
-                                       command=lambda: self.switch_frame(self.executeLoginButton))
-        button_sign_in.place(relx=0.4, rely=0.7, anchor=tk.CENTER)
-        
-        button_sign_up = ctk.CTkButton(self.frameInitialPage, text="CHANGE THEME", font=("Arial", 20, "bold"), 
-                                       command=self.changeTheme)
-        button_sign_up.place(relx=0.6, rely=0.7, anchor=tk.CENTER)
+
+        # Additional "BK" label 
+        bk_label = ctk.CTkLabel(left_frame, text="GROUP: 6", font=("Arial", 20, "bold"), text_color="white")
+        bk_label.place(relx=0.46, rely=0.5, anchor=tk.CENTER)
+
+        # "A NETWORK APPLICATION" label
+        app_label = ctk.CTkLabel(left_frame, text="A NETWORK APPLICATION", font=("Arial", 20), text_color="white")
+        app_label.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+        # Right side: Login form
+        right_frame = ctk.CTkFrame(self.frameInitialPage, width=400, height=350, fg_color="white")
+        right_frame.place(relx=0.5, rely=0.2)
+
+        label_login = ctk.CTkLabel(right_frame, text="Login", font=("Arial", 30, "bold"), text_color="black")
+        label_login.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+
+        username_entry = ctk.CTkEntry(right_frame, placeholder_text="User Name", width=300, height=40, font=("Arial", 16))
+        username_entry.place(relx=0.5, rely=0.35 , anchor=tk.CENTER)
+
+        password_entry = ctk.CTkEntry(right_frame, placeholder_text="Password", width=300, height=40, font=("Arial", 16), show="*")
+        password_entry.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        button_login = ctk.CTkButton(right_frame, text="Login", font=("Arial", 16, "bold"), fg_color="#4B2E83", 
+                                     command=lambda: self.check_login(username_entry, password_entry))
+        button_login.place(relx=0.3  , rely=0.8, anchor=tk.CENTER)
+
+        button_signup = ctk.CTkButton(right_frame, text="Signup", font=("Arial", 16, "bold"), fg_color="#FF4D4D", 
+                                      command=lambda: messagebox.showinfo("Info", "Signup feature not implemented!"))
+        button_signup.place(relx=0.7, rely=0.8, anchor=tk.CENTER)
         
         return self.frameInitialPage
-
-    def executeLoginButton(self):
-        home_page = ctk.CTkButton(self.frameExecuteLoginButton, text="HOME PAGE", font=("Arial", 20, "bold"),
-                                  command=lambda: self.switch_frame(self.initialPage))
-        home_page.place(relx=0.5, rely=0.15, anchor=tk.CENTER)
-        
-        label_login = ctk.CTkLabel(self.frameExecuteLoginButton, text="LOG IN", font=("Arial", 30, "bold"))
-        label_login.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-
-        label_username = ctk.CTkLabel(self.frameExecuteLoginButton, text="Username", font=("Arial", 20, "bold"))
-        label_username.place(relx=0.2, rely=0.5, anchor=tk.CENTER)
-        
-        username_entry = ctk.CTkEntry(self.frameExecuteLoginButton, placeholder_text="Username", width=300, height=4)
-        username_entry.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-        label_password = ctk.CTkLabel(self.frameExecuteLoginButton, text="Password", font=("Arial", 20, "bold"))
-        label_password.place(relx=0.2, rely=0.6, anchor=tk.CENTER)
-        
-        password_entry = ctk.CTkEntry(self.frameExecuteLoginButton, placeholder_text="Password", width=300, height=4)
-        password_entry.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
-
-        button_sign_in = ctk.CTkButton(self.frameExecuteLoginButton, text="CONFIRM", font=("Arial", 20, "bold"), 
-                                       command=lambda: self.check_login(username_entry, password_entry))
-        button_sign_in.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
-        
-        return self.frameExecuteLoginButton
 
     def check_login(self, username_entry, password_entry):
         username = username_entry.get()
@@ -143,38 +160,49 @@ class SERVER_FE(ctk.CTk):
         self.switch_frame(self.mainPage)
         
     def mainPage(self):
+
         self.outputListPeer.place(relx=0.5, rely=0.55, anchor=ctk.CENTER, relwidth=0.8, relheight=0.8)
         self.outputListPeer.configure(state=DISABLED)
-        
-        self.outputStatusCenter.place(relx=0.5, rely=0.58, anchor=tk.CENTER, relwidth=0.4, relheight=0.4)
+
+        # image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/logo-removebg-preview.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        # image = Image.open(image_path)
+        # new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
+        # image = image.resize(new_size, Image.LANCZOS )
+        # photo = ImageTk.PhotoImage(image)
+        # image_label = ctk.CTkLabel(self.frameMainPage, image=photo)
+        # image_label.image = photo  # Giữ tham chiếu đến hình ảnh
+        # image_label.place(relx=0.8, rely=0.2, anchor=tk.CENTER)
+        self.outputStatusCenter.configure(fg_color="white")  # Đặt màu nền thành trắng
+
+        self.outputStatusCenter.place(relx=0.3, rely=0.58, anchor=tk.CENTER, relwidth=0.5, relheight=0.55)
         self.outputStatusCenter.configure(state=DISABLED)
         
         frame_label = ctk.CTkLabel(self.frameMainPage, text="Table State", font=("Arial", 15))
-        frame_label.place(relx=0.5, rely=0.81, anchor=tk.CENTER)
+        frame_label.place(relx=0.27, rely=0.89, anchor=tk.CENTER)
 
         frame_label = ctk.CTkLabel(self.frameMainPage, text="WELCOME ADMIN", font=("Arial", 40, "bold"))
-        frame_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+        frame_label.place(relx=0.25, rely=0.1, anchor=tk.CENTER)
         
-        frame_label = ctk.CTkLabel(self.frameMainPage, text="INFORMATION OF TRACKER", font=("Arial", 20, "bold"))
-        frame_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        # frame_label = ctk.CTkLabel(self.frameMainPage, text="INFORMATION OF TRACKER", font=("Arial", 20, "bold"))
+        # frame_label.place(relx=0.3, rely=0.2, anchor=tk.CENTER)
         
         frame_label = ctk.CTkLabel(self.frameMainPage, text="Server Host: " + self.serverHost, font=("Arial", 15))
-        frame_label.place(relx=0.5, rely=0.27, anchor=tk.CENTER)
+        frame_label.place(relx=0.15, rely=0.2   , anchor=tk.CENTER)
         
         frame_label = ctk.CTkLabel(self.frameMainPage, text="Server Port: " + str(self.serverPort), font=("Arial", 15))
-        frame_label.place(relx=0.5, rely=0.31, anchor=tk.CENTER)
+        frame_label.place(relx=0.13, rely=0.25, anchor=tk.CENTER)
 
         btn_view_user = ctk.CTkButton(self.frameMainPage, text="LIST PEERS", font=("Arial", 20, "bold"),
                                       command=lambda: self.animate_panel.animate())
-        btn_view_user.place(relx=0.25, rely=0.9, anchor=tk.CENTER)
+        btn_view_user.place(relx=0.8, rely=0.6, anchor=tk.CENTER)
 
-        btn_show_peer = ctk.CTkButton(self.frameMainPage, text="FILES ON SYSTEM", font=("Arial", 20, "bold"),
+        btn_show_peer = ctk.CTkButton(self.frameMainPage, text="LIST FILES", font=("Arial", 20, "bold"),
                                       command=lambda: self.switch_frame(self.listFilesOnSystem))
-        btn_show_peer.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
+        btn_show_peer.place(relx=0.8, rely=0.7, anchor=tk.CENTER)
 
-        btn_change_themes = ctk.CTkButton(self.frameMainPage, text="CHANGE THEMES", font=("Arial", 20, "bold"),
+        btn_change_themes = ctk.CTkButton(self.frameMainPage, text="COLOFUL", font=("Arial", 20, "bold"),
                                           command=self.changeTheme)
-        btn_change_themes.place(relx=0.75, rely=0.9, anchor=tk.CENTER)
+        btn_change_themes.place(relx=0.8, rely=0.8, anchor=tk.CENTER)
         
         list_header = ctk.CTkLabel(self.animate_panel, text="LIST PEERS", font=("Arial", 30, "bold"))
         list_header.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
@@ -182,24 +210,30 @@ class SERVER_FE(ctk.CTk):
         return self.frameMainPage
     
     def listFilesOnSystem(self):
-        self.outputFileOnSystem.place(relx=0.5, rely=0.58, anchor=tk.CENTER, relwidth=0.4, relheight=0.4)
+        self.frameListFilesOnSystem.configure(fg_color="#909090")  # Màu nền cho frame chính
+        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/144.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image = Image.open(image_path)
+        new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
+        image = image.resize(new_size, Image.LANCZOS )
+        photo = ImageTk.PhotoImage(image)
+        image_label = ctk.CTkLabel(self.frameListFilesOnSystem, image=photo, text="")
+        image_label.image = photo  # Giữ tham chiếu đến hình ảnh
+        image_label.place(relx=0.8, rely=0.3, anchor=tk.CENTER)
+        self.outputFileOnSystem.place(relx=0.3, rely=0.58, anchor=tk.CENTER, relwidth=0.5, relheight=0.55)
         self.outputFileOnSystem.configure(state=DISABLED)
 
-        frame_label = ctk.CTkLabel(self.frameListFilesOnSystem, text="LIST OF FILES ON THE SYSTEM", font=("Arial", 45, "bold"))
-        frame_label.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
-        
-        frame_label = ctk.CTkLabel(self.frameListFilesOnSystem, text="INFORMATION OF TRACKER", font=("Arial", 20, "bold"))
-        frame_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        frame_label = ctk.CTkLabel(self.frameListFilesOnSystem, text="LIST OF FILES", font=("Arial", 40, "bold"))
+        frame_label.place(relx=0.2, rely=0.1, anchor=tk.CENTER)
         
         frame_label = ctk.CTkLabel(self.frameListFilesOnSystem, text="Server Host: " + self.serverHost, font=("Arial", 15))
-        frame_label.place(relx=0.5, rely=0.27, anchor=tk.CENTER)
+        frame_label.place(relx=0.15, rely=0.2   , anchor=tk.CENTER)
         
         frame_label = ctk.CTkLabel(self.frameListFilesOnSystem, text="Server Port: " + str(self.serverPort), font=("Arial", 15))
-        frame_label.place(relx=0.5, rely=0.31, anchor=tk.CENTER)
+        frame_label.place(relx=0.13, rely=0.25, anchor=tk.CENTER)
 
         btn_BACK = ctk.CTkButton(self.frameListFilesOnSystem, text="BACK", font=("Arial", 20, "bold"),
                                  command=lambda: self.switch_frame(self.mainPage))
-        btn_BACK.place(relx=0.5, rely=0.9, anchor=tk.CENTER)
+        btn_BACK.place(relx=0.8, rely=0.8, anchor=tk.CENTER)
 
         return self.frameListFilesOnSystem
 
