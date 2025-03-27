@@ -10,7 +10,10 @@ import pickle
 import threading
 import os
 import math
+from PIL import Image, ImageTk  # Thêm dòng này vào đầu file
+from tkinter import filedialog  # Thêm import này để sử dụng cửa sổ chọn tệp
 
+#cd " C:\Users\Duy\OneDrive - hcmut.edu.vn\mạng máy tính\CO3093-ComputerNetwork-main\Assignment1\COMPUTER_NETWORKING-APP_OF_PEER\client1"
 
 WIDTH = 900
 HEIGHT = 600
@@ -107,46 +110,52 @@ class PEER_FE(ctk.CTk):
         ctk.set_appearance_mode("light")
     
   def initialPage(self):
-    
-    frame_label = ctk.CTkLabel(self.frameInitialPage, text="WELCOME TO\n BITTORENT FILE SHARING", font=("Arial",40,"bold"))
-    frame_label.place(relx=0.5,rely=0.4,anchor=tk.CENTER)
+        # Background color for left side (logo area)
+        left_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
+        left_frame.place(relx=0, rely=0)
+        t1_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
+        t1_frame.place(relx=0.5, rely=0)
+        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/new1.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image = Image.open(image_path)
+        new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
+        image = image.resize(new_size, Image.LANCZOS )
+        photo = ImageTk.PhotoImage(image)
+        image_label = ctk.CTkLabel(self.frameInitialPage, image=photo, text="")
+        image_label.image = photo  # Giữ tham chiếu đến hình ảnh
+        image_label.place(relx=0.25, rely=0.27, anchor=tk.CENTER)
 
-    button_sign_in = ctk.CTkButton(self.frameInitialPage, text="LOG IN", font=("Arial", 15, "bold"),
-                                    command=lambda:self.switch_frame(self.executeLoginButton))
-    button_sign_in.place(relx=0.4,rely=0.7,anchor=tk.CENTER)
-    
-    button_sign_up = ctk.CTkButton(self.frameInitialPage, text="CHANGE THEME", font=("Arial", 15, "bold"), command= self.changeTheme)
-    button_sign_up.place(relx=0.6,rely=0.7,anchor=tk.CENTER)
-    
-    return self.frameInitialPage
 
-  def executeLoginButton(self):
-    
-    home_page = ctk.CTkButton(self.frameExecuteLoginButton, text="HOME PAGE", font=("Arial",20,"bold"),
-                              command= lambda:self.switch_frame(self.initialPage) )
-    home_page.place(relx = 0.5, rely = 0.15, anchor = tk.CENTER)
-    
-    label_login = ctk.CTkLabel(self.frameExecuteLoginButton, text="LOG IN", font=(("Arial",30,"bold")))
-    label_login.place(relx= 0.5,rely= 0.4,anchor = tk.CENTER)
+        # Additional "BK" label 
+        # Additional "BK" label 
+        bk_label = ctk.CTkLabel(left_frame, text="GROUP: 6", font=("Arial", 20, "bold"), text_color="white")
+        bk_label.place(relx=0.46, rely=0.5, anchor=tk.CENTER)
 
-    label_username = ctk.CTkLabel(self.frameExecuteLoginButton, text="Username", font=("Arial",20,"bold"))
-    label_username.place(relx = 0.2, rely=0.5, anchor = tk.CENTER)
-    
-    username_entry = ctk.CTkEntry(self.frameExecuteLoginButton, placeholder_text="Username", width=300, height=4, show= "***********")
-    username_entry.place(relx = 0.5, rely = 0.5, anchor = tk.CENTER)
+        # "A NETWORK APPLICATION" label
+        app_label = ctk.CTkLabel(left_frame, text="A NETWORK APPLICATION", font=("Arial", 20), text_color="white")
+        app_label.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
 
-    label_password = ctk.CTkLabel(self.frameExecuteLoginButton, text="Password", font=("Arial",20,"bold"))
-    label_password.place(relx = 0.2, rely=0.6, anchor = tk.CENTER)
-    
-    password_entry = ctk.CTkEntry(self.frameExecuteLoginButton, placeholder_text="Password", width=300, height=4, show = "***************")
-    password_entry.place(relx = 0.5, rely = 0.6, anchor = tk.CENTER)
+        # Right side: Login form
+        right_frame = ctk.CTkFrame(self.frameInitialPage, width=400, height=350, fg_color="white")
+        right_frame.place(relx=0.5, rely=0.2)
 
-    button_sign_in = ctk.CTkButton(self.frameExecuteLoginButton, text="CONFIRM", font=("Arial",15,"bold"), 
-                                    command= lambda:self.executeConfirmButton(username_entry, password_entry))
-    button_sign_in.place(relx = 0.5, rely = 0.7, anchor = tk.CENTER)
-    
-    return self.frameExecuteLoginButton
+        label_login = ctk.CTkLabel(right_frame, text="Login", font=("Arial", 30, "bold"), text_color="black")
+        label_login.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
 
+        username_entry = ctk.CTkEntry(right_frame, placeholder_text="User Name", width=300, height=40, font=("Arial", 16))
+        username_entry.place(relx=0.5, rely=0.35 , anchor=tk.CENTER)
+
+        password_entry = ctk.CTkEntry(right_frame, placeholder_text="Password", width=300, height=40, font=("Arial", 16), show="*")
+        password_entry.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+        button_login = ctk.CTkButton(right_frame, text="Login", font=("Arial", 16, "bold"), fg_color="#4B2E83", 
+                                     command=lambda: self.executeConfirmButton(username_entry, password_entry))
+        button_login.place(relx=0.3  , rely=0.8, anchor=tk.CENTER)
+
+        button_signup = ctk.CTkButton(right_frame, text="Signup", font=("Arial", 16, "bold"), fg_color="#FF4D4D", 
+                                      command=lambda: messagebox.showinfo("Info", "Signup feature not implemented!"))
+        button_signup.place(relx=0.7, rely=0.8, anchor=tk.CENTER)
+        
+        return self.frameInitialPage
   def executeConfirmButton(self, usernameEntry, passwordEntry):
     self.username= usernameEntry.get()
     self.password= passwordEntry.get()
@@ -154,7 +163,7 @@ class PEER_FE(ctk.CTk):
     self.switch_frame(self.connectToServer)
     
   def connectToServer(self):
-      
+    self.frameConnectToServer.configure(fg_color="#909090")  # Màu nền cho frame chính      
     home_page = ctk.CTkLabel(self.frameConnectToServer, text="JOIN TO NETWORK", font=("Arial",40,"bold"))
     home_page.place(relx = 0.5, rely = 0.3, anchor = tk.CENTER)
   
@@ -170,7 +179,7 @@ class PEER_FE(ctk.CTk):
     serverPortEntry = ctk.CTkEntry(self.frameConnectToServer, placeholder_text="Port", width=300, height=7)
     serverPortEntry.place(relx = 0.5, rely = 0.6, anchor = tk.CENTER)
 
-    button_sign_in = ctk.CTkButton(self.frameConnectToServer, text="CONNECT TO SERVER", font=("Arial",15,"bold"), 
+    button_sign_in = ctk.CTkButton(self.frameConnectToServer, text="CONNECT TO SERVER", font=("Arial",20,"bold"), 
                                     command= lambda:self.executeConnectToServerButton(serverHostEntry, serverPortEntry))
     button_sign_in.place(relx = 0.5, rely = 0.8, anchor = tk.CENTER)
     
@@ -189,18 +198,27 @@ class PEER_FE(ctk.CTk):
     self.switch_frame(self.mainPage)
     
   def mainPage(self):
-      
-    frame_label = ctk.CTkLabel(self.frameMainPage, text="THE MAIN FUNCTION", font=("Arial",40,"bold"))
-    frame_label.place(relx=0.5,rely=0.2,anchor=tk.CENTER)
-    
-    frame_label = ctk.CTkLabel(self.frameMainPage, text="INFORMATION OF PEER", font=("Arial",20, "bold"))
-    frame_label.place(relx=0.5,rely=0.4,anchor=tk.CENTER)
-    
-    frame_label = ctk.CTkLabel(self.frameMainPage, text="Peer Host: "+ self.peerHost, font=("Arial", 15 ))
-    frame_label.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
-    
-    frame_label = ctk.CTkLabel(self.frameMainPage, text="Peer Port: "+ str(self.peerPort), font=("Arial", 15))
-    frame_label.place(relx=0.5,rely=0.55,anchor=tk.CENTER)
+    self.frameMainPage.configure(fg_color="#909090")  # Màu nền cho frame chính
+    image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/144.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+    image = Image.open(image_path)
+    new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
+    image = image.resize(new_size, Image.LANCZOS )
+    photo = ImageTk.PhotoImage(image)
+    image_label = ctk.CTkLabel(self.frameMainPage, image=photo, text="")
+    image_label.image = photo  # Giữ tham chiếu đến hình ảnh
+    image_label.place(relx=0.7, rely=0.3, anchor=tk.CENTER)
+
+    frame_label = ctk.CTkLabel(self.frameMainPage, text="WELCOM CLIENT 1", font=("Arial", 40, "bold"))
+    frame_label.place(relx=0.25, rely=0.1, anchor=tk.CENTER)
+        
+        # frame_label = ctk.CTkLabel(self.frameMainPage, text="INFORMATION OF PEER", font=("Arial", 20, "bold"))
+        # frame_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+        
+    frame_label = ctk.CTkLabel(self.frameMainPage, text="Peer Host: " + self.peerHost, font=("Arial", 15))
+    frame_label.place(relx=0.15, rely=0.2   , anchor=tk.CENTER)
+        
+    frame_label = ctk.CTkLabel(self.frameMainPage, text="Peer Port: " + str(self.peerPort), font=("Arial", 15))
+    frame_label.place(relx=0.12, rely=0.25, anchor=tk.CENTER)
     
     #----------------Button UPLOAD---------------------------------------------------------
     self.btn_upload = ctk.CTkButton(self.frameMainPage, text="UPLOAD", font=("Arial", 20, "bold"),
@@ -223,7 +241,9 @@ class PEER_FE(ctk.CTk):
     return self.frameMainPage
   
   def executeUploadButton(self):
-
+    self.frameExecuteUploadButton.configure(fg_color="#909090")  # Màu nền cho frame chính
+    frame_label = ctk.CTkLabel(self.frameMainPage, text="WELCOM CLIENT 1", font=("Arial", 40, "bold"))
+    frame_label.place(relx=0.25, rely=0.1, anchor=tk.CENTER)
     header_upload = ctk.CTkLabel(self.frameExecuteUploadButton, text="UPLOAD FILE", font=("Arial", 40,"bold"))
     header_upload.place(relx = 0.5,rely=0.3,anchor = CENTER)
     
@@ -236,24 +256,39 @@ class PEER_FE(ctk.CTk):
     upload_entry = ctk.CTkEntry(self.frameExecuteUploadButton, width=300, height= 10, placeholder_text="Enter path to file")
     upload_entry.place(relx = 0.5, rely=0.5,anchor = tk.CENTER)
     
-    btn_BACK= ctk.CTkButton(self.frameExecuteUploadButton,text="BACK", font=("Arial", 20,"bold"),
-                          command =lambda: self.switch_frame(self.mainPage))
-    btn_BACK.place(relx= 0.3, rely= 0.7, anchor= tk.CENTER)
-    
-    btn_upload = ctk.CTkButton(self.frameExecuteUploadButton, text="UPLOAD", font=("Arial", 20,"bold"),
-                                command=lambda:(self.getFileUpload(upload_entry)))      
-    btn_upload.place(relx = 0.5,rely=0.7,anchor = CENTER)
-  
-    
-    btn_view_repo=ctk.CTkButton(self.frameExecuteUploadButton,text="FILE UPLOADED", font=("Arial", 20,"bold"),
-                          command =lambda:self.animatePaneUpload.animate())
-    btn_view_repo.place(relx= 0.7, rely= 0.7, anchor= tk.CENTER)
-    
-    list_header=ctk.CTkLabel(self.animatePaneUpload, text = " LIST FILES ", font=("Comic Sans",30,"bold"))
-    list_header.place(relx=0.5,rely=0.1,anchor=ctk.CENTER)
-    # list_header.pack()
+    btn_select_file = ctk.CTkButton(self.frameExecuteUploadButton, text="Browser", font=("Arial", 15, "bold"), 
+                                        fg_color="red", text_color="white", hover_color="darkred",                                   
+                                        command=lambda: self.select_file(upload_entry))
+    btn_select_file.place(relx=0.2, rely=0.7, anchor=tk.CENTER)  # Đặt nút bên phải ô nhập    
 
+
+    btn_BACK = ctk.CTkButton(self.frameExecuteUploadButton, text="BACK", font=("Arial", 20, "bold"),
+                                 command=lambda: self.switch_frame(self.mainPage))
+    btn_BACK.place(relx=0.4, rely=0.7, anchor=tk.CENTER)
+        
+    btn_upload = ctk.CTkButton(self.frameExecuteUploadButton, text="UPLOAD", font=("Arial", 20, "bold"),
+                                   command=lambda: self.getFileUpload(upload_entry))
+    btn_upload.place(relx=0.6, rely=0.7, anchor=tk.CENTER)
+        
+    btn_view_repo = ctk.CTkButton(self.frameExecuteUploadButton, text="FILE UPLOADED", font=("Arial", 20, "bold"),
+                                      command=lambda: self.animatePaneUpload.animate())
+    btn_view_repo.place(relx=0.8, rely=0.7, anchor=tk.CENTER)
+        
+    list_header = ctk.CTkLabel(self.animatePaneUpload, text=" LIST FILES ", font=("Comic Sans", 30, "bold"))
+    list_header.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
     return self.frameExecuteUploadButton
+  def select_file(self, upload_entry):
+        file_path = filedialog.askopenfilename(
+        title="Select a file to upload",
+        filetypes=(("All files", "*.*"), ("Text files", "*.txt"), ("PDF files", "*.pdf"))  # Các loại tệp cho phép
+    )
+        if file_path:  # Nếu người dùng chọn một tệp
+         file_path = file_path.replace("/", "\\")
+         upload_entry.delete(0, tk.END)  # Xóa nội dung hiện tại trong ô nhập
+         upload_entry.insert(0, file_path)  # Điền đường dẫn tệp đã chọn 
+
+
   
   def getFileUpload(self, upload_entry):
     filePathUpload= upload_entry.get()   # file path
@@ -280,45 +315,43 @@ class PEER_FE(ctk.CTk):
     return frame
       
   def executeDownloadButton(self):
+        self.frameExecuteDownloadButton.configure(fg_color="#909090")  # Màu nền cho frame chính
 
-    header_upload = ctk.CTkLabel(self.frameExecuteDownloadButton, text="DOWNLOAD FILE", font=("Arial", 40,"bold"))
-    header_upload.place(relx = 0.5,rely=0.1,anchor = CENTER)
-    
-    listOfFile = ctk.CTkLabel(self.frameExecuteDownloadButton, text="LIST OF FILES", font=("Arial", 20,"bold"))
-    listOfFile.place(relx = 0.5,rely=0.2,anchor = CENTER)
- 
-    self.textFileExist.place(relx=0.5,rely=0.44,anchor=ctk.CENTER,relwidth=0.3,relheight=0.4)
-    self.textFileExist.configure(state=DISABLED)
-    self.showFileExist()
-    
-    self.outputFileDownload.place(relx=0.5,rely=0.55,anchor=ctk.CENTER,relwidth=0.8,relheight=0.8)
-    self.outputFileDownload.configure(state=DISABLED)
+        header_upload = ctk.CTkLabel(self.frameExecuteDownloadButton, text="DOWNLOAD FILE: CLIENT 1", font=("Arial", 40, "bold"))
+        header_upload.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+        
+        listOfFile = ctk.CTkLabel(self.frameExecuteDownloadButton, text="LIST OF FILES", font=("Arial", 20, "bold"))
+        listOfFile.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+        
+        self.textFileExist.place(relx=0.5, rely=0.44, anchor=ctk.CENTER, relwidth=0.3, relheight=0.4)
+        self.textFileExist.configure(state=tk.DISABLED, fg_color="white")  # Đặt màu nền thành trắng
+        self.showFileExist()
+        
+        self.outputFileDownload.place(relx=0.5, rely=0.55, anchor=ctk.CENTER, relwidth=0.8, relheight=0.8)
+        self.outputFileDownload.configure(state=tk.DISABLED)
 
-    upload_label = ctk.CTkLabel(self.frameExecuteDownloadButton, text="Enter your file name", font=("Arial", 20,"bold"))
-    upload_label.place(relx = 0.5, rely=0.7,anchor = tk.CENTER)
+        upload_label = ctk.CTkLabel(self.frameExecuteDownloadButton, text="Enter your file name", font=("Arial", 20, "bold"))
+        upload_label.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
 
-    upload_entry = ctk.CTkEntry(self.frameExecuteDownloadButton, width=300, height= 10, placeholder_text="Enter file name")
-    upload_entry.place(relx = 0.5, rely=0.75,anchor = tk.CENTER)
-    
-    btn_BACK= ctk.CTkButton(self.frameExecuteDownloadButton,text="BACK", font=("Arial", 20,"bold"),
-                          command =lambda: self.switch_frame(self.mainPage))
-    btn_BACK.place(relx= 0.3, rely= 0.85, anchor= tk.CENTER)
-    
-    btn_upload = ctk.CTkButton(self.frameExecuteDownloadButton, text="DOWNLOAD", font=("Arial", 20,"bold"),
-                                command=lambda:(self.getFileDownload(upload_entry)))      
-    btn_upload.place(relx = 0.5,rely=0.85,anchor = CENTER)
-  
-    
-    btn_view_repo=ctk.CTkButton(self.frameExecuteDownloadButton,text="FILE DOWNLOADED", font=("Arial", 20,"bold"),
-                          command =lambda: self.animatePanelDownload.animate())
-    btn_view_repo.place(relx= 0.75, rely= 0.85, anchor= tk.CENTER)
-    
-    list_header=ctk.CTkLabel(self.animatePanelDownload, text = " LIST FILES ", font=("Comic Sans",30,"bold")
-                              )
-    list_header.place(relx=0.5,rely=0.1,anchor=ctk.CENTER)
-    # list_header.pack()
-
-    return self.frameExecuteDownloadButton
+        upload_entry = ctk.CTkEntry(self.frameExecuteDownloadButton, width=300, height=10, placeholder_text="Enter file name")
+        upload_entry.place(relx=0.5, rely=0.75, anchor=tk.CENTER)
+        
+        btn_BACK = ctk.CTkButton(self.frameExecuteDownloadButton, text="BACK", font=("Arial", 20, "bold"),
+                                 command=lambda: self.switch_frame(self.mainPage))
+        btn_BACK.place(relx=0.3, rely=0.85, anchor=tk.CENTER)
+        
+        btn_upload = ctk.CTkButton(self.frameExecuteDownloadButton, text="DOWNLOAD", font=("Arial", 20, "bold"),
+                                   command=lambda: self.getFileDownload(upload_entry))
+        btn_upload.place(relx=0.5, rely=0.85, anchor=tk.CENTER)
+        
+        btn_view_repo = ctk.CTkButton(self.frameExecuteDownloadButton, text="FILE DOWNLOADED", font=("Arial", 20, "bold"),
+                                      command=lambda: self.animatePanelDownload.animate())
+        btn_view_repo.place(relx=0.75, rely=0.85, anchor=tk.CENTER)
+        
+        list_header = ctk.CTkLabel(self.animatePanelDownload, text=" LIST FILES ", font=("Comic Sans", 30, "bold"))
+        list_header.place(relx=0.5, rely=0.1, anchor=ctk.CENTER)
+        
+        return self.frameExecuteDownloadButton
   
   def getFileDownload(self, download_entry):
     stringFileNameDownload= str(download_entry.get())
