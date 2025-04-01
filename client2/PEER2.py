@@ -115,7 +115,7 @@ class PEER_FE(ctk.CTk):
         left_frame.place(relx=0, rely=0)
         t1_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
         t1_frame.place(relx=0.5, rely=0)
-        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/new1.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image_path = os.path.join(os.path.dirname(__file__), "new1.png")
         image = Image.open(image_path)
         new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
         image = image.resize(new_size, Image.LANCZOS )
@@ -199,7 +199,7 @@ class PEER_FE(ctk.CTk):
     
   def mainPage(self):
     self.frameMainPage.configure(fg_color="#909090")  # Màu nền cho frame chính
-    image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/144.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+    image_path = os.path.join(os.path.dirname(__file__), "144.png")
     image = Image.open(image_path)
     new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
     image = image.resize(new_size, Image.LANCZOS )

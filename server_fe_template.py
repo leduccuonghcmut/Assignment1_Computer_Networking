@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter as tk
+import os
 import customtkinter as ctk
 from PIL import Image, ImageTk  # Thêm dòng này vào đầu file
 from tkinter import messagebox
@@ -104,14 +105,15 @@ class SERVER_FE(ctk.CTk):
         left_frame.place(relx=0, rely=0)
         t1_frame = ctk.CTkFrame(self.frameInitialPage, width=500, height=HEIGHT, fg_color="#2B1A47")
         t1_frame.place(relx=0.5, rely=0)
-        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/new1.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        # image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/new1.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image_path = os.path.join(os.path.dirname(__file__), "new1.png")
         image = Image.open(image_path)
         new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
         image = image.resize(new_size, Image.LANCZOS )
-        photo = ImageTk.PhotoImage(image)
+        photo = ctk.CTkImage(light_image=image, dark_image=image, size=new_size)
+        # Hiển thị ảnh trên label
         image_label = ctk.CTkLabel(self.frameInitialPage, image=photo, text="")
-        image_label.image = photo  # Giữ tham chiếu đến hình ảnh
-        image_label.place(relx=0.25, rely=0.27, anchor=tk.CENTER)
+        image_label.place(relx=0.25, rely=0.27, anchor="center")
 
 
         # Additional "BK" label 
@@ -211,7 +213,9 @@ class SERVER_FE(ctk.CTk):
     
     def listFilesOnSystem(self):
         self.frameListFilesOnSystem.configure(fg_color="#909090")  # Màu nền cho frame chính
-        image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/144.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        # image_path = "C:/Users/Duy/OneDrive - hcmut.edu.vn/mạng máy tính/144.png"  # Thay đổi đường dẫn tới hình ảnh của bạn
+        image_path = os.path.join(os.path.dirname(__file__), "144.png")
+
         image = Image.open(image_path)
         new_size = (300, 300)  # Thay đổi width và height theo kích thước bạn muốn
         image = image.resize(new_size, Image.LANCZOS )
