@@ -242,34 +242,101 @@ class SERVER_FE(ctk.CTk):
         return self.frameListFilesOnSystem
 
     # Hàm hiển thị dữ liệu lên UI (có thể được gọi từ backend)
-    def showPeers(self, informPeer):
+    def showPeers(self, typeOfStatement, informPeer):
+     if typeOfStatement == "Join to LAN":
         self.outputListPeer.configure(state=NORMAL)
-        self.numberOfPeers += 1
-        self.outputListPeer.insert(ctk.END, f"{self.numberOfPeers}.  PeerHost: {informPeer[0]}, PeerPort: {informPeer[1]}." + "\n\n")
+        self.outputListPeer.insert(ctk.END, f"PeerHost: {informPeer[0]}, PeerPort: {informPeer[1]}.\n\n")
         self.outputListPeer.see(ctk.END)
         self.outputListPeer.configure(state=DISABLED)
     
-    def showListFileOnSystem(self, listFileShared):
+     elif typeOfStatement == "BYE":
+        self.outputListPeer.configure(state=NORMAL)
+        
+        # Lấy danh sách cũ và lọc lại
+        lines = self.outputListPeer.get("1.0", ctk.END).strip().split("\n")
+        new_lines = [line for line in lines if f"PeerHost: {informPeer[0]}, PeerPort: {informPeer[1]}" not in line]
+        
+        # Cập nhật lại thứ tự sau khi xóa
+        formatted_lines = [line.strip() for line in new_lines if line.strip()]  # Loại bỏ các dòng trống
+
+        
+        # Xóa danh sách cũ & cập nhật mới
+        self.outputListPeer.delete("1.0", ctk.END)  # Xóa toàn bộ nội dung
+        if formatted_lines:
+            self.outputListPeer.insert(ctk.END, "\n".join(formatted_lines) + "\n")  # Chỉ cập nhật danh sách mới nếu có peer còn lại
+        else:
+            self.outputListPeer.insert(ctk.END, "")  # Nếu không còn peer nào, cập nhật danh sách rỗng
+        
+        self.outputListPeer.see(ctk.END)
+        self.outputListPeer.configure(state=DISABLED)
+
+
+        
+
+    def showListFileOnSystem(self, listFileShared,pieces):
+    # def showListFileOnSystem(self, listFileShared,pieces,peerHost,peerPort,typeOfStatement):
         self.outputFileOnSystem.configure(state=NORMAL)
         counter = 1
         self.outputFileOnSystem.delete(1.0, ctk.END)
         for iterator in listFileShared:
-            self.outputFileOnSystem.insert(ctk.END, f"{counter}. fileName: \"{iterator.fileName}\"." + "\n")
+            self.outputFileOnSystem.insert(ctk.END, f"{counter}. fileName: \"{iterator.fileName}\", pieces: {pieces}.\n")
             for peer in iterator.informPeerLocal:
                 self.outputFileOnSystem.insert(ctk.END, f"      [PeerHost: {peer[1]}, PeerPort: {peer[2]}]" + "\n")
             self.outputFileOnSystem.insert(ctk.END, "\n")
             counter += 1
         self.outputFileOnSystem.see(ctk.END)
         self.outputFileOnSystem.configure(state=DISABLED)
+        # if typeOfStatement== "BYE":
+    # def showListFileOnSystem(self, listFileShared, pieces, peerHost, peerPort, typeOfStatement):
+    #   self.outputFileOnSystem.configure(state=NORMAL)
+    #   counter = 1
+    #   self.outputFileOnSystem.delete(1.0, ctk.END)
+    #   print(peerHost)
+    #   print(peerPort)
 
-    def showStatusCenter(self, typeOfStatement, peerHost, peerPort, fileName):
+    #   for iterator in listFileShared:
+    #     # Tạo danh sách peer tạm thời để hiển thị (không ảnh hưởng dữ liệu gốc)
+    #       displayPeers = iterator.informPeerLocal
+
+    #     # Nếu typeOfStatement là "BYE", lọc danh sách peer hiển thị
+    #       if typeOfStatement == "BYE":
+    #           displayPeers = [peer for peer in iterator.informPeerLocal if not (peer[1] == peerHost and peer[2] == peerPort)]
+
+    #     # Nếu file vẫn còn peer sau khi lọc, thì hiển thị
+    #       if displayPeers:
+    #           self.outputFileOnSystem.insert(ctk.END, f"{counter}. fileName: \"{iterator.fileName}\", pieces: {pieces}.\n")
+    #           for peer in displayPeers:
+    #               self.outputFileOnSystem.insert(ctk.END, f"      [PeerHost: {peer[1]}, PeerPort: {peer[2]}]" + "\n")
+    #           self.outputFileOnSystem.insert(ctk.END, "\n")
+    #           counter += 1  # Chỉ tăng nếu file có hiển thị
+
+    #   self.outputFileOnSystem.see(ctk.END)
+    #   self.outputFileOnSystem.configure(state=DISABLED)
+
+
+    # Hiển thị danh sách mới
+    #   for index, iterator in enumerate(listFileShared, start=1):
+    #       self.outputFileOnSystem.insert(ctk.END, f"{index}. fileName: \"{iterator.fileName}\", pieces: {pieces}.\n")
+
+    #       for peer in iterator.informPeerLocal:
+    #           self.outputFileOnSystem.insert(ctk.END, f"      [PeerHost: {peer[1]}, PeerPort: {peer[2]}]" + "\n")
+
+    #       self.outputFileOnSystem.insert(ctk.END, "\n")
+
+    #   self.outputFileOnSystem.see(ctk.END)
+    #   self.outputFileOnSystem.configure(state=DISABLED)
+
+
+    def showStatusCenter(self, typeOfStatement, peerHost, peerPort, fileName,pieces):
         self.outputStatusCenter.configure(state=NORMAL)
         if typeOfStatement == "Download":
-            self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} download file \"{fileName}\"" + "\n\n")
+            self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} download file \"{fileName}\",Pieces: {pieces}" + "\n\n")
         elif typeOfStatement == "Upload":
-            self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} upload file \"{fileName}\"" + "\n\n")
+            self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} upload file \"{fileName}\"Pieces: {pieces}" + "\n\n")
         elif typeOfStatement == "Join to LAN":
             self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} joined to network" + "\n\n")
+        elif typeOfStatement == "BYE":
+            self.outputStatusCenter.insert(ctk.END, f"PeerHost: {peerHost}, PeerPort: {peerPort} disconected to network" + "\n\n")
         self.outputStatusCenter.see(ctk.END)
         self.outputStatusCenter.configure(state=DISABLED)
 

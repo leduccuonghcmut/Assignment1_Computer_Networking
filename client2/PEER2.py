@@ -646,9 +646,143 @@ class PEER_BE():
       condition= Thread(target= self.threadListenServerOrPeers, args= [conn, addr, stopFlag])
       condition.start()
       
-  def implementDownload(self, fileNameDownload):
+  # def implementDownload(self, fileNameDownload):
     
-    #-------------------- socket initial-------------------
+  #   #-------------------- socket initial-------------------
+  #   peerConnectServerSocket= socket.socket()
+  #   peerConnectServerSocket.connect((self.serverHost, self.serverPort))
+  #   #-------------------------------------------------------
+    
+  #   #------------------ send and receive--------------------------------
+  #   peerConnectServerSocket.send(bytes("Download", "utf-8"))
+  #   peerConnectServerSocket.recv(4096)  # success
+  #   # --------------------------------------------------------------
+    
+  #   #------------------Send List of files want to down------------------------------
+  #   peerConnectServerSocket.sendall(pickle.dumps(fileNameDownload))
+  #   peerConnectServerSocket.recv(4096)
+  #   #-------------------------------------------------------------------
+    
+  #   #--------------------Send peerHost and peerPort----------------------
+  #   peerConnectServerSocket.send(bytes(self.peerHost, "utf-8"))
+  #   peerConnectServerSocket.recv(4096)  # success
+  #   peerConnectServerSocket.send(bytes(str(self.peerPort), "utf-8"))
+  #   peerConnectServerSocket.recv(4096)  # success
+  #   #--------------------------------------------------------------------
+    
+  #   peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))  # insert
+
+  #   #-----------------Check file is exist or not------------------------
+  #   condition= str(peerConnectServerSocket.recv(4096), "utf-8")  # complete  # stop
+  #   peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))  # confirm
+  #   if condition== "File exist!":
+  #     allContent= b''
+  #     #------------Receive list filePath and peer-------------------------------
+  #     listFilePathPeer= pickle.loads(peerConnectServerSocket.recv(10240))
+  #     peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
+  #     #-------------------------------------------------------------------------
+            
+  #     #---------------Receive number of pieces----------------------------------
+  #     pieces= int(str(peerConnectServerSocket.recv(4096), "utf-8"))
+  #     print(pieces)
+  #     peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
+  #     #-------------------------------------------------------------------------
+      
+  #     #----------------------close connection with server-------------------------
+  #     peerConnectServerSocket.recv(4096)
+  #     peerConnectServerSocket.send(bytes("Cancel", "utf-8"))
+  #     peerConnectServerSocket.recv(4096)  # success
+      
+  #     peerConnectServerSocket.close()
+  #     #---------------------------------------------------------------------------
+    
+  #     numberOfPeers= len(listFilePathPeer)
+      
+  #     pointer= 0
+  #     piecesRemain= pieces
+  #     iteratorPeer= 0
+  #     while piecesRemain > 0:
+  #       filePath= listFilePathPeer[iteratorPeer%numberOfPeers][0]
+  #       targetPeerHost= listFilePathPeer[iteratorPeer%numberOfPeers][1]
+  #       targetPeerPort= listFilePathPeer[iteratorPeer%numberOfPeers][2]
+  #       print(piecesRemain)
+  #       if targetPeerHost== self.peerHost and targetPeerPort== self.peerPort:
+  #         with open(filePath, 'rb') as file:
+  #           file.seek(pointer)
+  #           data= file.read(subFileSize)
+  #           allContent+= data
+  #           print("pieces : " + str(pieces - piecesRemain + 1))
+  #           print(targetPeerHost, targetPeerPort)
+  #           file.close()
+  #       else:   
+  #         #----------------Initial connect to another peer--------------------------
+  #         peerConnectPeerSocket= socket.socket()
+  #         peerConnectPeerSocket.connect((targetPeerHost, targetPeerPort))
+  #         print(targetPeerPort)
+  #         #--------------------------------------------------------------------------
+          
+  #         #-----------------Inform the PEER the other peer want to connect------------------
+  #         peerConnectPeerSocket.send(bytes("PEER", "utf-8"))  # 
+  #         peerConnectPeerSocket.recv(4096)  # Success
+  #         #----------------------------------------------------------------------------
+          
+  #         #-----------------Send SubFile name to the peer for downloading-----------------
+  #         peerConnectPeerSocket.send(bytes(filePath, "utf-8"))  # 
+  #         peerConnectPeerSocket.recv(4096)  # Success
+  #         #-------------------------------------------------------------------------------
+          
+  #         #--------------------Send Pointer position------------------------
+  #         peerConnectPeerSocket.send(bytes(str(pointer), "utf-8"))
+  #         peerConnectPeerSocket.recv(4096)
+  #         #--------------------------------------------------------------------
+          
+  #         peerConnectPeerSocket.send(bytes("CONFIRM", "utf-8"))  # new insert
+          
+  #         #-----------------------Receive subContent---------------------------
+  #         data= peerConnectPeerSocket.recv(subFileSize)
+  #         peerConnectPeerSocket.send(bytes("SUCCESS", "utf-8"))
+  #         allContent+= data
+  #         #--------------------------------------------------------------------
+  #         allContent += data # Ghi dữ liệu vào biến allContent
+  #         print("pieces : " + str(pieces - piecesRemain + 1))
+  #         print(targetPeerHost, targetPeerPort)
+  #         peerConnectPeerSocket.recv(4096)   # new insert
+          
+  #         #-----------------------Send the cancel command------------------------------------------
+  #         peerConnectPeerSocket.send(bytes("Cancel", "utf-8"))  # 
+  #         peerConnectPeerSocket.recv(4096)  # Success
+  #         #-----------------------------------------------------------------------------
+          
+  #         #----------------Close the connection--------------------------
+  #         peerConnectPeerSocket.close()
+  #         #-------------------------------
+        
+  #       if iteratorPeer%100== 0:
+  #         with open(fileNameDownload, 'ab') as file:
+  #           file.write(allContent)
+  #           allContent= b""
+  #           file.close()
+  #       pointer+= subFileSize
+  #       piecesRemain-= 1
+  #       iteratorPeer+= 1
+       
+  #     #-------------Write and save-------------------------------
+  #     with open(fileNameDownload, 'ab') as file:
+  #       file.write(allContent)
+  #       file.close()
+  #     #---------------------------------------------------------
+        
+  #     messagebox.showinfo("Successful", "Download file "+ str(fileNameDownload)+" completed!")
+  #     PEER_FEObject.fileDownloaded.append(fileNameDownload)
+  #     PEER_FEObject.showFileDownloaded(fileNameDownload)
+      
+  #     filePath= os.path.abspath(fileNameDownload)
+  #     self.seedingFileCompleted(filePath)
+  #   else:
+  #     messagebox.showerror("Error", "File "+ str(fileNameDownload)+ " not exist!")
+  def implementDownload(self, fileNameDownload):
+    # ... (phần kết nối server và nhận thông tin không thay đổi)
+   #-------------------- socket initial-------------------
     peerConnectServerSocket= socket.socket()
     peerConnectServerSocket.connect((self.serverHost, self.serverPort))
     #-------------------------------------------------------
@@ -671,111 +805,79 @@ class PEER_BE():
     #--------------------------------------------------------------------
     
     peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))  # insert
-
     #-----------------Check file is exist or not------------------------
-    condition= str(peerConnectServerSocket.recv(4096), "utf-8")  # complete  # stop
-    peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))  # confirm
-    if condition== "File exist!":
-      allContent= b''
-      #------------Receive list filePath and peer-------------------------------
-      listFilePathPeer= pickle.loads(peerConnectServerSocket.recv(10240))
-      peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
-      #-------------------------------------------------------------------------
-            
-      #---------------Receive number of pieces----------------------------------
-      pieces= int(str(peerConnectServerSocket.recv(4096), "utf-8"))
-      print(pieces)
-      peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
-      #-------------------------------------------------------------------------
-      
-      #----------------------close connection with server-------------------------
-      peerConnectServerSocket.recv(4096)
-      peerConnectServerSocket.send(bytes("Cancel", "utf-8"))
-      peerConnectServerSocket.recv(4096)  # success
-      
-      peerConnectServerSocket.close()
-      #---------------------------------------------------------------------------
-    
-      numberOfPeers= len(listFilePathPeer)
-      
-      pointer= 0
-      piecesRemain= pieces
-      iteratorPeer= 0
-      while piecesRemain > 0:
-        filePath= listFilePathPeer[iteratorPeer%numberOfPeers][0]
-        targetPeerHost= listFilePathPeer[iteratorPeer%numberOfPeers][1]
-        targetPeerPort= listFilePathPeer[iteratorPeer%numberOfPeers][2]
-        print(piecesRemain)
-        if targetPeerHost== self.peerHost and targetPeerPort== self.peerPort:
-          with open(filePath, 'rb') as file:
-            file.seek(pointer)
-            data= file.read(subFileSize)
-            allContent+= data
-            file.close()
-        else:   
-          #----------------Initial connect to another peer--------------------------
-          peerConnectPeerSocket= socket.socket()
-          peerConnectPeerSocket.connect((targetPeerHost, targetPeerPort))
-          #--------------------------------------------------------------------------
-          
-          #-----------------Inform the PEER the other peer want to connect------------------
-          peerConnectPeerSocket.send(bytes("PEER", "utf-8"))  # 
-          peerConnectPeerSocket.recv(4096)  # Success
-          #----------------------------------------------------------------------------
-          
-          #-----------------Send SubFile name to the peer for downloading-----------------
-          peerConnectPeerSocket.send(bytes(filePath, "utf-8"))  # 
-          peerConnectPeerSocket.recv(4096)  # Success
-          #-------------------------------------------------------------------------------
-          
-          #--------------------Send Pointer position------------------------
-          peerConnectPeerSocket.send(bytes(str(pointer), "utf-8"))
-          peerConnectPeerSocket.recv(4096)
-          #--------------------------------------------------------------------
-          
-          peerConnectPeerSocket.send(bytes("CONFIRM", "utf-8"))  # new insert
-          
-          #-----------------------Receive subContent---------------------------
-          data= peerConnectPeerSocket.recv(subFileSize)
-          peerConnectPeerSocket.send(bytes("SUCCESS", "utf-8"))
-          allContent+= data
-          #--------------------------------------------------------------------
-          
-          peerConnectPeerSocket.recv(4096)   # new insert
-          
-          #-----------------------Send the cancel command------------------------------------------
-          peerConnectPeerSocket.send(bytes("Cancel", "utf-8"))  # 
-          peerConnectPeerSocket.recv(4096)  # Success
-          #-----------------------------------------------------------------------------
-          
-          #----------------Close the connection--------------------------
-          peerConnectPeerSocket.close()
-          #-------------------------------
+    condition = str(peerConnectServerSocket.recv(4096), "utf-8")
+    peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
+    if condition == "File exist!":
+        allContent = b''  # Tích lũy dữ liệu
+        listFilePathPeer = pickle.loads(peerConnectServerSocket.recv(10240))
+        peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
         
-        if iteratorPeer%100== 0:
-          with open(fileNameDownload, 'ab') as file:
-            file.write(allContent)
-            allContent= b""
-            file.close()
-        pointer+= subFileSize
-        piecesRemain-= 1
-        iteratorPeer+= 1
-       
-      #-------------Write and save-------------------------------
-      with open(fileNameDownload, 'ab') as file:
-        file.write(allContent)
-        file.close()
-      #---------------------------------------------------------
+        pieces = int(str(peerConnectServerSocket.recv(4096), "utf-8"))
+        print(f"Pieces expected: {pieces}")
+        peerConnectServerSocket.send(bytes("SUCCESS", "utf-8"))
         
-      messagebox.showinfo("Successful", "Download file "+ str(fileNameDownload)+" completed!")
-      PEER_FEObject.fileDownloaded.append(fileNameDownload)
-      PEER_FEObject.showFileDownloaded(fileNameDownload)
-      
-      filePath= os.path.abspath(fileNameDownload)
-      self.seedingFileCompleted(filePath)
-    else:
-      messagebox.showerror("Error", "File "+ str(fileNameDownload)+ " not exist!")
+        peerConnectServerSocket.recv(4096)
+        peerConnectServerSocket.send(bytes("Cancel", "utf-8"))
+        peerConnectServerSocket.recv(4096)
+        peerConnectServerSocket.close()
 
+        numberOfPeers = len(listFilePathPeer)
+        pointer = 0
+        piecesRemain = pieces
+        iteratorPeer = 0
+
+        # Thu thập toàn bộ dữ liệu trước khi ghi
+        while piecesRemain > 0:
+            filePath = listFilePathPeer[iteratorPeer % numberOfPeers][0]
+            targetPeerHost = listFilePathPeer[iteratorPeer % numberOfPeers][1]
+            targetPeerPort = listFilePathPeer[iteratorPeer % numberOfPeers][2]
+            # print(f"Downloading piece {pieces - piecesRemain + 1}/{pieces} from {targetPeerHost}:{targetPeerPort}")
+
+            if targetPeerHost == self.peerHost and targetPeerPort == self.peerPort:
+                with open(filePath, 'rb') as file:
+                    file.seek(pointer)
+                    data = file.read(self.subFileSize)
+                    allContent += data
+                    print(f"Downloading file: {fileNameDownload},Piece {pieces - piecesRemain + 1}/{pieces} from {targetPeerHost}:{self.peerPort}")
+                    file.close()
+            else:
+                peerConnectPeerSocket = socket.socket()
+                peerConnectPeerSocket.connect((targetPeerHost, targetPeerPort))
+                peerConnectPeerSocket.send(bytes("PEER", "utf-8"))
+                peerConnectPeerSocket.recv(4096)
+                peerConnectPeerSocket.send(bytes(filePath, "utf-8"))
+                peerConnectPeerSocket.recv(4096)
+                peerConnectPeerSocket.send(bytes(str(pointer), "utf-8"))
+                peerConnectPeerSocket.recv(4096)
+                peerConnectPeerSocket.send(bytes("CONFIRM", "utf-8"))
+                data = peerConnectPeerSocket.recv(self.subFileSize)
+                peerConnectPeerSocket.send(bytes("SUCCESS", "utf-8"))
+                allContent += data
+                print(f"Downloading file: {fileNameDownload} ,Piece {pieces - piecesRemain + 1}/{pieces} from {targetPeerHost}:{targetPeerPort}")
+                peerConnectPeerSocket.recv(4096)
+                peerConnectPeerSocket.send(bytes("Cancel", "utf-8"))
+                peerConnectPeerSocket.recv(4096)
+                peerConnectPeerSocket.close()
+
+            pointer += self.subFileSize
+            piecesRemain -= 1
+            iteratorPeer += 1
+
+        # Ghi dữ liệu một lần duy nhất với chế độ ghi đè ("wb")
+        with open(fileNameDownload, 'wb') as file:
+            file.write(allContent)
+            print(f"File written: {len(allContent)} bytes")
+            file.close()
+
+        messagebox.showinfo("Successful", "Download file " + str(fileNameDownload) + " completed!")
+        PEER_FEObject.fileDownloaded.append(fileNameDownload)
+        PEER_FEObject.showFileDownloaded(fileNameDownload)
+
+        filePath = os.path.abspath(fileNameDownload)
+        self.seedingFileCompleted(filePath)
+    else:
+        messagebox.showerror("Error", "File " + str(fileNameDownload) + " not exist!")
     #---------------------------------------------------------------------------------------
   
     return
