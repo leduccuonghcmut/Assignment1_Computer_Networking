@@ -12,7 +12,8 @@ import os
 import math
 from PIL import Image, ImageTk  # Thêm dòng này vào đầu file
 from tkinter import filedialog  # Thêm import này để sử dụng cửa sổ chọn tệp
-
+import keyboard
+import time
 #cd " C:\Users\Duy\OneDrive - hcmut.edu.vn\mạng máy tính\CO3093-ComputerNetwork-main\Assignment1\COMPUTER_NETWORKING-APP_OF_PEER\client1"
 
 WIDTH = 900
@@ -396,7 +397,38 @@ class PEER_FE(ctk.CTk):
     self.textFileExist.configure(state=DISABLED)
 
 #-------------------------------------End Front end-------------------------------------
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #-------------------------------Backend-----------------------------------------------
 
 class PEER_BE():
@@ -407,9 +439,42 @@ class PEER_BE():
     
     self.peerHost= peerHost
     self.peerPort= peerPort
-    
+    self.byeSent = False
     self.subFileSize= 512*1024
-    
+  def sendByeBeforeExit(self):
+        # Kiểm tra nếu đã gửi tín hiệu BYE rồi, không gửi lại
+        if self.byeSent:
+            print("🔴 Tín hiệu BYE đã được gửi, không gửi lại.")
+            return
+
+        try:
+            peerConnectServerSocket = socket.socket()
+            peerConnectServerSocket.connect((self.serverHost, self.serverPort))
+            print("🔴 Đang gửi tín hiệu BYE...")
+            peerConnectServerSocket.send(bytes("BYE", "utf-8"))
+            print("📤 Đã gửi: BYE")
+
+            response = peerConnectServerSocket.recv(4096)  # success
+            print(f"📩 Nhận phản hồi từ server: {response.decode('utf-8')}")
+
+            peerInform = pickle.dumps([self.peerHost, self.peerPort])
+            peerConnectServerSocket.sendall(peerInform)
+            peerConnectServerSocket.recv(4096)  # success
+            peerConnectServerSocket.close()
+
+            # Đánh dấu rằng tín hiệu BYE đã được gửi
+            self.byeSent = True
+            print("✅ Đã gửi tín hiệu BYE và chuẩn bị thoát.")
+            os.system("taskkill /F /PID " + str(os.getppid()))
+        except Exception as e:
+            print(f"📥 Lỗi khi gửi BYE: {e}")
+        
+  def listenForQuitKey(self):
+    while True:
+        if keyboard.is_pressed('e'):  # Nếu phím 'w' được bấm
+            self.sendByeBeforeExit()
+            break
+        time.sleep(0.1)  # Kiểm tra mỗi 100ms 
   def seedingFileCompleted(self, filePath):
      #-------------------- socket initial-------------------
     peerConnectServerSocket= socket.socket()
@@ -896,7 +961,8 @@ if __name__ == "__main__":
   PEER_BEObject= PEER_BE(peerHost, peerPort)
   condition1= Thread(target= PEER_BEObject.listenServerOrPeers)
   condition1.start()
-  
+  condition2 = Thread(target=PEER_BEObject.listenForQuitKey)
+  condition2.start() 
   PEER_FEObject = PEER_FE(peerHost, peerPort)
   PEER_FEObject.mainloop()
     

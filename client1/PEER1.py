@@ -12,13 +12,6 @@ import os
 import math
 from PIL import Image, ImageTk  # Thêm dòng này vào đầu file
 from tkinter import filedialog  # Thêm import này để sử dụng cửa sổ chọn tệp
-
-import atexit
-
-import signal
-
-import sys
-
 import keyboard
 import time
 #cd " C:\Users\Duy\OneDrive - hcmut.edu.vn\mạng máy tính\CO3093-ComputerNetwork-main\Assignment1\COMPUTER_NETWORKING-APP_OF_PEER\client1"
