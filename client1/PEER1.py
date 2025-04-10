@@ -442,20 +442,6 @@ class PEER_BE():
     
     self.subFileSize= 512*1024
     self.byeSent = False
-  # def sendByeBeforeExit(self):
-  #   peerConnectServerSocket= socket.socket()
-  #   peerConnectServerSocket.connect((self.serverHost, self.serverPort))
-  #   print("🔴 Đang gửi tín hiệu BYE...")
-  #   peerConnectServerSocket.send(bytes("BYE", "utf-8"))
-  #   print("📤 Đã gửi: BYE")
-  #   response = peerConnectServerSocket.recv(4096)  # success
-  #   print(f"📩 Nhận phản hồi từ server: {response.decode('utf-8')}")
-  #   peerInform= pickle.dumps([self.peerHost, self.peerPort])
-  #   peerConnectServerSocket.sendall(peerInform)
-  #   peerConnectServerSocket.recv(4096) # success
-  #   peerConnectServerSocket.close()
-  #   sys.exit(0) 
-    # os.system("taskkill /F /PID " + str(os.getppid()))
   def sendByeBeforeExit(self):
         # Kiểm tra nếu đã gửi tín hiệu BYE rồi, không gửi lại
         if self.byeSent:
@@ -484,7 +470,6 @@ class PEER_BE():
         except Exception as e:
             print(f"📥 Lỗi khi gửi BYE: {e}")
         
-        sys.exit(0)  # Đảm bảo thoát chương trình
   def listenForQuitKey(self):
     while True:
         if keyboard.is_pressed('q'):  # Nếu phím 'Q' được bấm

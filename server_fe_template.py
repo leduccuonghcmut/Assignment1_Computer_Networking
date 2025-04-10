@@ -279,7 +279,7 @@ class SERVER_FE(ctk.CTk):
         counter = 1
         self.outputFileOnSystem.delete(1.0, ctk.END)
         for iterator in listFileShared:
-            self.outputFileOnSystem.insert(ctk.END, f"{counter}. fileName: \"{iterator.fileName}\", pieces: {pieces}.\n")
+            self.outputFileOnSystem.insert(ctk.END, f"{counter}. fileName: \"{iterator.fileName}\", Pieces: {iterator.pieces}.\n")
             for peer in iterator.informPeerLocal:
                 self.outputFileOnSystem.insert(ctk.END, f"      [PeerHost: {peer[1]}, PeerPort: {peer[2]}]" + "\n")
             self.outputFileOnSystem.insert(ctk.END, "\n")

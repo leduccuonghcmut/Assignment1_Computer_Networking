@@ -16,6 +16,7 @@ class fileShared:
         self.fileName = fileName
         self.numberOfPeer = 1
         self.size = size
+        self.pieces = math.ceil(size / subFileSize)
         self.informPeerLocal = [[filePath, peerHost, peerPort]]
 
 #---------------------------------SERVER_BE Class---------------------pyth-------------------------
@@ -110,7 +111,7 @@ class SERVER_BE:
         while not stopFlag.is_set():
         #   try:  
             typeOfRequest = str(conn.recv(4096), "utf-8")
-            print(f"📥 Server nhận: {typeOfRequest}")  # Debug
+            # print(f"📥 Server nhận: {typeOfRequest}")  # Debug
             conn.send(bytes("SUCCESS", "utf-8"))  # Xác nhận với client
 
             if typeOfRequest == "Join to LAN":
@@ -123,6 +124,8 @@ class SERVER_BE:
                 conn.recv(4096)
                 conn.send(bytes("SUCCESS", "utf-8"))
                 SERVER_FEObject.showStatusCenter(typeOfRequest, peerInform[0], peerInform[1], "","")
+            elif typeOfRequest== "Cancel":
+                stopFlag.set()
             elif typeOfRequest == "BYE":
                 print("disconect")
                 conn.send(bytes("SUCCESS", "utf-8"))
